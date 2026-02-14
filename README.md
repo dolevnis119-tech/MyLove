@@ -1,1 +1,501 @@
-# MyLove
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? 💘</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #ffe6e9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- עיצובים למצב מפחיד --- */
+        body.scary-mode {
+            background-color: #0f0000;
+        }
+
+        /* --- אפקט הגליץ' --- */
+        @keyframes glitch {
+            0% { transform: translate(0); text-shadow: 2px 2px red; }
+            20% { transform: translate(-3px, 3px); text-shadow: -2px -2px blue; }
+            40% { transform: translate(-3px, -3px); text-shadow: 2px -2px red; }
+            60% { transform: translate(3px, 3px); text-shadow: -2px 2px blue; }
+            80% { transform: translate(3px, -3px); text-shadow: 2px 2px red; }
+            100% { transform: translate(0); text-shadow: -2px -2px blue; }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.1s cubic-bezier(.25, .46, .45, .94) both infinite !important;
+            color: #ff0000 !important;
+            font-family: 'Courier New', Courier, monospace !important;
+            font-weight: bold;
+            letter-spacing: 5px;
+        }
+
+        /* --- עיצוב הטקסט המסוכן --- */
+        #warningText {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #777;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            cursor: default;
+            direction: ltr;
+        }
+
+        body.scary-mode #warningText {
+            color: red;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        /* --- מסך השאלה --- */
+        #questionScreen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            transition: opacity 1s;
+        }
+
+        h1 {
+            color: #d6336c;
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            direction: ltr;
+            transition: all 0.5s ease;
+        }
+
+        .buttons {
+            position: relative;
+            display: flex;
+            gap: 20px;
+            direction: ltr;
+        }
+
+        button {
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+
+        #yesBtn {
+            background-color: #ff4757;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        }
+
+        #yesBtn:hover { transform: scale(1.1); background-color: #ff6b81; }
+
+        #noBtn {
+            background-color: #fff;
+            color: #ff4757;
+            border: 2px solid #ff4757;
+            position: relative;
+        }
+
+        /* --- מסך הגלריה והטיימר --- */
+        #galleryScreen {
+            display: none;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s;
+            padding-bottom: 100px;
+        }
+
+        #timerSection {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #guessContainer input {
+            padding: 10px;
+            font-size: 1.2rem;
+            border: 2px solid #d6336c;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            width: 80%;
+            direction: rtl;
+        }
+
+        #guessContainer h3 { color: #d6336c; font-size: 1.8rem; }
+        #revealTimerBtn { background-color: #d6336c; color: white; font-size: 1.2rem; padding: 10px 30px; margin-top: 10px; }
+        #actualTimer { display: none; color: #d6336c; animation: fadeIn 1s; }
+        #timerClock { font-size: 1.5rem; font-weight: bold; line-height: 1.6; margin-top: 10px; color: #ff4757; direction: rtl; }
+
+        /* --- עיצוב מכתב האהבה --- */
+        #loveLetterSection {
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+            padding: 35px;
+            background-color: #fff;
+            background-image: linear-gradient(#f1f1f1 1px, transparent 1px);
+            background-size: 100% 1.5em;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-family: 'Courier New', Courier, monospace; 
+            line-height: 1.8em;
+            text-align: right;
+            position: relative;
+            transform: rotate(-0.5deg);
+        }
+
+        #typewriterText {
+            font-size: 1.25rem;
+            color: #333;
+            white-space: pre-wrap; 
+            font-weight: bold;
+        }
+        
+        #cursor { border-right: 2px solid #d6336c; animation: blink 0.7s infinite; }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        /* --- כותרת הגלריה --- */
+        .gallery-title {
+            font-size: 2.5rem;
+            color: #d6336c;
+            margin-bottom: 30px;
+            font-family: 'Brush Script MT', cursive;
+            direction: ltr;
+        }
+
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .photo-card {
+            background: white;
+            padding: 15px 15px 25px 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 250px;
+            transform: rotate(-2deg);
+            transition: all 0.4s ease;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+        .photo-card:nth-child(even) { transform: rotate(2deg); }
+        .photo-card:hover { transform: scale(1.05); z-index: 10; }
+        .photo-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 3px; margin-bottom: 10px; filter: blur(5px) grayscale(50%); transition: filter 0.5s; }
+        .photo-card.revealed { transform: rotate(0deg) scale(1.1); z-index: 5; cursor: default; }
+        .photo-card.revealed img { filter: none; }
+        .caption { font-family: 'Segoe UI', sans-serif; color: #555; font-size: 1.1rem; font-weight: 500; display: none; direction: rtl; }
+        .click-hint { font-family: 'Segoe UI', sans-serif; color: #ff4757; font-weight: bold; font-size: 1rem; animation: pulse 1.5s infinite; direction: rtl; }
+
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        #finalSection { display: none; margin-top: 50px; width: 100%; text-align: center; padding-bottom: 50px; }
+        #playVideoBtn { background-color: #d6336c; color: white; font-size: 1.5rem; padding: 20px 50px; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px rgba(214, 51, 108, 0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); direction: rtl; }
+        #videoContainer { display: none; margin-top: 30px; max-width: 90%; width: 600px; margin-left: auto; margin-right: auto; background: white; padding: 10px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        video { width: 100%; border-radius: 5px; }
+
+        .heart { position: fixed; top: -10vh; font-size: 2rem; transform: translateY(0); animation: fall 3s linear forwards; z-index: 1000; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(110vh); } }
+
+        .trail-heart { position: absolute; height: 20px; width: 20px; font-size: 20px; pointer-events: none; animation: fadeOut 1s forwards; z-index: 999; }
+        @keyframes fadeOut { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.5) translateY(20px); } }
+
+        .music-controls { position: fixed; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 10px; z-index: 2000; transition: opacity 0.5s; }
+        #musicPlayerBtn { background-color: #d6336c; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        #playMeBtn { background-color: #fff; color: #d6336c; border: 2px solid #d6336c; border-radius: 25px; padding: 10px 20px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        body.scary-mode .music-controls { opacity: 0; pointer-events: none; }
+
+        #jumpscareOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: black; display: none; justify-content: center; align-items: center; z-index: 9999; }
+        #jumpscareOverlay video { width: 100%; height: 100%; object-fit: cover; display: none; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-controls">
+        <button id="playMeBtn" onclick="toggleMusic()">נגן אותי</button>
+        <button id="musicPlayerBtn" onclick="toggleMusic()">🎵</button>
+    </div>
+
+    <div id="jumpscareOverlay">
+        <video id="jumpVideo" playsinline>
+            <source src="jump.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="questionScreen">
+        <h1 id="mainTitle">Will you be my valentine? 💘</h1>
+        <div class="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+        <p id="warningText">⬆️ do not press! dangerous ⚠️</p>
+    </div>
+
+    <div id="galleryScreen">
+        <div id="timerSection">
+            <div id="guessContainer">
+                <h3>נראה אם את זוכרת...<br>כמה זמן אנחנו ביחד? 🤔</h3>
+                <input type="text" placeholder="נחשי כמה ימים/שנים..." id="guessInput">
+                <br>
+                <button id="revealTimerBtn" onclick="revealTimer()">גלי לי את התשובה! ✨</button>
+            </div>
+            <div id="actualTimer">
+                <h3>אנחנו ביחד כבר... ❤️</h3>
+                <div id="timerClock"></div>
+            </div>
+        </div>
+
+        <div id="loveLetterSection">
+            <span id="typewriterText"></span><span id="cursor"></span>
+        </div>
+
+        <h2 class="gallery-title">Click to reveal our memories ❤️</h2>
+        <div class="gallery-container">
+            <div class="photo-card" onclick="revealCard(this)">
+                <img src="firstdate.jpeg" alt="Memory 1">
+                <div class="click-hint">לחץ עליי ✨</div>
+                <div class="caption">הדייט הראשון שלנו 🍷</div>
+            </div>
+            <div class="photo-card" onclick="revealCard(this)">
+                <img src="firstdate2.jpeg" alt="Memory 1">
+                <div class="click-hint">לחץ עליי ✨</div>
+                <div class="caption">עוד תמונה מהדייט הראשון שלנו 🍷</div>
+            </div>
+            <div class="photo-card" onclick="revealCard(this)">
+                <img src="cutepic.jpeg" alt="Memory 2">
+                <div class="click-hint">לחץ עליי ✨</div>
+                <div class="caption">סתם תמונה יפה שלנו שאהבתי</div>
+            </div>
+            <div class="photo-card" onclick="revealCard(this)">
+                <img src="gym.jpeg" alt="Memory 3">
+                <div class="click-hint">לחץ עליי ✨</div>
+                <div class="caption">אימון שעשינו ביחד ❤</div>
+            </div>
+            <div class="photo-card" onclick="revealCard(this)">
+                <img src="poland.jpeg" alt="Memory 4">
+                <div class="click-hint">לחץ עליי ✨</div>
+                <div class="caption">כשחזרת מפולין</div>
+            </div>
+        </div>
+
+        <div id="finalSection">
+            <button id="playVideoBtn">לחץ עליי זה סוד 😁</button>
+            <div id="videoContainer">
+                <video id="myVideo" controls playsinline>
+                    <source src="vid.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionScreen = document.getElementById('questionScreen');
+        const galleryScreen = document.getElementById('galleryScreen');
+        const finalSection = document.getElementById('finalSection');
+        const playVideoBtn = document.getElementById('playVideoBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const myVideo = document.getElementById('myVideo');
+        const mainTitle = document.getElementById('mainTitle');
+        const jumpscareOverlay = document.getElementById('jumpscareOverlay');
+        const jumpVideo = document.getElementById('jumpVideo'); 
+        const warningText = document.getElementById('warningText');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicPlayerBtn');
+        const playMeBtn = document.getElementById('playMeBtn');
+
+        let isSecondPhase = false;
+        let openedCards = 0;
+        const totalCards = 5;
+
+        const loveLetterContent = `הפחדתי אותך?
+אני מקווה שכן 
+סתם!
+התלבטתי איזה שיר לשים ובסוף בחרתי לשים אותו
+אל תדאגי יהיו עוד אתרים כאלה עם עוד המון שירים אני מבטיח
+טוב אז לברכה הקצרה:
+ילדה יפה שלי, 
+רציתי להגיד לך כמה שאני אוהב אותך
+כמה שאני שמח שנכנסת לי לחיים
+וכל יום איתך הוא חוויה חדשה שאני לא יכול לחכות לחוות
+אני כל כך שמח שזכיתי להכיר ילדה כמוך
+ילדה עם לב זהב.
+אני מאוהב בך כל כך ליאל
+אני באמת לא יודע מה הייתי עושה בלעדיך 
+את עושה אותי הילד הכי מאושר בעולם ואני כל כך בר מזל שפגשתי אותך
+יום אהבה שמח❤
+I remember when I first noticed that you liked me back`;
+
+        document.addEventListener('mousemove', function(e) {
+            if(!document.body.classList.contains('scary-mode')) {
+                const heart = document.createElement('div');
+                heart.classList.add('trail-heart');
+                heart.innerHTML = '💖';
+                heart.style.left = e.pageX + 'px'; heart.style.top = e.pageY + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1000);
+            }
+        });
+
+        let isPlaying = false;
+        function toggleMusic() {
+            if (isPlaying) { 
+                bgMusic.pause(); musicBtn.innerText = "🎵"; playMeBtn.innerText = "נגן אותי"; 
+            } else { 
+                bgMusic.play(); musicBtn.innerText = "⏸️"; playMeBtn.innerText = "עצור"; 
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function startTypewriter() {
+            let i = 0;
+            const textElement = document.getElementById("typewriterText");
+            textElement.innerHTML = "";
+            function type() {
+                if (i < loveLetterContent.length) {
+                    textElement.innerHTML += loveLetterContent.charAt(i);
+                    i++;
+                    setTimeout(type, 110); // מהירות כתיבה איטית
+                } else {
+                    document.getElementById("cursor").style.display = "none";
+                }
+            }
+            type();
+        }
+
+        window.addEventListener("blur", () => document.title = "תחזרי לפה! ❤️");
+        window.addEventListener("focus", () => document.title = "Be My Valentine? 💘");
+
+        noBtn.addEventListener('click', () => {
+            if (!isSecondPhase) {
+                mainTitle.innerText = "Are you sure? 🤔";
+                document.body.classList.add('scary-mode');
+                mainTitle.classList.add('glitch-effect'); 
+                warningText.innerText = "I TOLD YOU NOT TO PRESS! 💀";
+                bgMusic.pause(); musicBtn.innerText = "🎵"; playMeBtn.innerText = "נגן אותי"; isPlaying = false;
+                isSecondPhase = true;
+            } else {
+                mainTitle.innerText = "Will you be my valentine? 💘";
+                document.body.classList.remove('scary-mode');
+                mainTitle.classList.remove('glitch-effect'); 
+                warningText.innerText = '⬆️ do not press! dangerous ⚠️';
+                isSecondPhase = false;
+            }
+        });
+        
+        function createHearts() {
+            const heartContainer = document.createElement('div');
+            document.body.appendChild(heartContainer);
+            const interval = setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart'); heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                heartContainer.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }, 300);
+            setTimeout(() => clearInterval(interval), 10000);
+        }
+
+        const startDate = new Date("2024-06-23"); 
+        function updateTimer() {
+            const now = new Date(); const diff = now - startDate;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+            document.getElementById("timerClock").innerHTML = `${days} ימים, ${hours} שעות, ${minutes} דקות ו-${seconds} שניות`;
+        }
+
+        function revealTimer() {
+            document.getElementById('guessContainer').style.display = 'none';
+            document.getElementById('actualTimer').style.display = 'block';
+            updateTimer(); setInterval(updateTimer, 1000); 
+        }
+
+        yesBtn.addEventListener('click', () => {
+            if (isSecondPhase) {
+                jumpscareOverlay.style.display = 'flex'; jumpVideo.style.display = 'none'; 
+                setTimeout(() => { jumpVideo.style.display = 'block'; jumpVideo.currentTime = 0; jumpVideo.play(); }, 2000); 
+                jumpVideo.onended = function() {
+                    jumpscareOverlay.style.display = 'none'; 
+                    mainTitle.innerText = "Will you be my valentine? 💘"; 
+                    document.body.classList.remove('scary-mode');
+                    mainTitle.classList.remove('glitch-effect'); 
+                    warningText.innerText = '⬆️ do not press! dangerous ⚠️';
+                    isSecondPhase = false; 
+                };
+            } else {
+                createHearts();
+                if(!isPlaying) toggleMusic();
+                questionScreen.style.opacity = '0';
+                setTimeout(() => {
+                    questionScreen.style.display = 'none';
+                    galleryScreen.style.display = 'block';
+                    document.body.style.overflow = 'auto'; 
+                    startTypewriter();
+                    setTimeout(() => galleryScreen.style.opacity = '1', 50);
+                    document.body.style.backgroundColor = "#fff0f3";
+                }, 500);
+            }
+        });
+
+        function revealCard(cardElement) {
+            if (cardElement.classList.contains('revealed')) return;
+            cardElement.classList.add('revealed');
+            cardElement.querySelector('.caption').style.display = 'block';
+            openedCards++;
+            if (openedCards === totalCards) {
+                setTimeout(() => {
+                    finalSection.style.display = 'block';
+                    finalSection.scrollIntoView({ behavior: 'smooth' });
+                }, 800);
+            }
+        }
+
+        playVideoBtn.addEventListener('click', () => {
+            playVideoBtn.style.display = 'none'; videoContainer.style.display = 'block'; 
+            myVideo.play().then(() => {
+                if (myVideo.requestFullscreen) myVideo.requestFullscreen();
+                else if (myVideo.webkitRequestFullscreen) myVideo.webkitRequestFullscreen();
+                else if (myVideo.msRequestFullscreen) myVideo.msRequestFullscreen();
+            });
+        });
+    </script>
+</body>
+</html>
